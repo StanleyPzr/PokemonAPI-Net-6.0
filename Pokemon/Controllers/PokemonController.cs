@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Pokemon.DTO;
 using Pokemon.Interfaces;
 using Pokemon.Models;
+using Pokemon.Repository;
 
 namespace Pokemon.Controllers
 {
@@ -11,12 +12,16 @@ namespace Pokemon.Controllers
     public class PokemonController : ControllerBase
     {
         private readonly IPokemonRepository _pokemonRepository;
+        private readonly ICategoriaRepository _categoriaRepository;
+        private readonly IEntrenadorRepository _entrenadorRepository;
         private readonly IMapper _mapper;
 
-        public PokemonController(IPokemonRepository pokemonRepository, IMapper mapper)
+        public PokemonController(IPokemonRepository pokemonRepository,  IMapper mapper, ICategoriaRepository categoriaRepository, IEntrenadorRepository entrenadorRepository)
         {
             _pokemonRepository = pokemonRepository;
             _mapper = mapper;
+            _categoriaRepository = categoriaRepository;
+            _entrenadorRepository = entrenadorRepository;
         }
 
         [HttpGet]
@@ -68,7 +73,38 @@ namespace Pokemon.Controllers
             return Ok(rating);
         }
 
-         
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreatePokemon([FromQuery] int IdEntrenador, [FromQuery] int IdCategoria, [FromBody] PokemonDto PokemonCreate)
+        {
+            if (PokemonCreate == null)
+                return BadRequest(ModelState);
+
+            var pokemones = _pokemonRepository.GetPokemoNs()
+                .Where(p => p.Nombre.Trim().ToUpper() == PokemonCreate.Nombre.TrimEnd().ToUpper())
+                .FirstOrDefault();
+
+            if (pokemones != null)
+            {
+                ModelState.AddModelError("", "El Pokemon ya existe");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var PokemonMap = _mapper.Map<PokemoN>(PokemonCreate);            
+
+            if (!_pokemonRepository.CreatePokemon(IdEntrenador,IdCategoria,PokemonMap))
+            {
+                ModelState.AddModelError("", "Ocurrio un error mientras guardaba.");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Creado Exitosamente");
+        }
+
 
     }   
 

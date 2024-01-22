@@ -63,5 +63,37 @@ namespace Pokemon.Controllers
             }
             return Ok(pais);
         }
+
+        [HttpPost]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        public IActionResult CreatePais([FromBody] PaisDto PaisCreate)
+        {
+            if (PaisCreate == null)
+                return BadRequest(ModelState);
+
+            var pais = _paisRepository.GetPais()
+                .Where(c => c.Nombre.Trim().ToUpper() == PaisCreate.Nombre.TrimEnd().ToUpper())
+                .FirstOrDefault();
+
+            if (pais != null)
+            {
+                ModelState.AddModelError("", "Pais ya existe");
+                return StatusCode(422, ModelState);
+            }
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var PaisMap = _mapper.Map<Pais>(PaisCreate);
+
+            if (!_paisRepository.CreatePais(PaisMap))
+            {
+                ModelState.AddModelError("", "Ocurrio un error mientras guardaba");
+                return StatusCode(500, ModelState);
+            }
+
+            return Ok("Creado Exitosamente");
+        }
     }
 }

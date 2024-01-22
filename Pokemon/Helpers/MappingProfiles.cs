@@ -8,9 +8,21 @@ namespace Pokemon.Helpers
     {
         public MappingProfiles()
         {
+            //GET's
             CreateMap<PokemoN, PokemonDto>();
-            CreateMap<Categoria, CategoriaDto>();
+            CreateMap<Categoria, CategoriaDto>();            
             CreateMap<Pais, PaisDto>();
+            CreateMap<Entrenador, EntrenadorDto>();
+            CreateMap<Reseña, ReseñaDto>();
+            CreateMap<Critico, CriticoDto>();
+
+            //POST's
+            CreateMap<CategoriaDto, Categoria>();
+            CreateMap<PaisDto, Pais>();
+            CreateMap<EntrenadorDto, Entrenador>();
+            CreateMap<PokemonDto, PokemoN>();
+            CreateMap<ReseñaDto, Reseña>();
+            CreateMap<CriticoDto, Critico>();
         }
     }
 }

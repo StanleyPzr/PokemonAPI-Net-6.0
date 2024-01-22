@@ -9,5 +9,7 @@ namespace Pokemon.Interfaces
         Pais GetPaisByEntrenador(int IdEntrenador);
         ICollection<Entrenador> GetEntradorByPais(int IdPais);
         bool PaisExists(int Id);
+        bool CreatePais(Pais pais);
+        bool Save();
     }
 }

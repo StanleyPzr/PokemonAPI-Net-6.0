@@ -15,6 +15,13 @@ namespace Pokemon.Repository
             _context = context;
             _mapper = mapper;
         }
+
+        public bool CreatePais(Pais pais)
+        {
+            _context.Add(pais);
+            return Save();
+        }
+
         public ICollection<Entrenador> GetEntradorByPais(int IdPais)
         {
            return _context.Entrenador.Where(e => e.Pais.Id == IdPais).ToList();
@@ -38,6 +45,12 @@ namespace Pokemon.Repository
         public bool PaisExists(int Id)
         {
             return _context.Pais.Any(p => p.Id == Id);
+        }
+
+        public bool Save()
+        {
+            var saved = _context.SaveChanges();
+            return saved > 0 ? true : false;
         }
     }
 }
