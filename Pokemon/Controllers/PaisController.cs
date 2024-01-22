@@ -95,5 +95,55 @@ namespace Pokemon.Controllers
 
             return Ok("Creado Exitosamente");
         }
+
+
+        [HttpPut("{paisId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+
+        public IActionResult UpdatePais(int paisId, [FromBody] PaisDto updatedPais)
+        {
+            if (updatedPais == null) return BadRequest(ModelState);
+
+            if (paisId != updatedPais.Id) return BadRequest(ModelState);
+
+            if (!_paisRepository.PaisExists(paisId)) return NotFound();
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            var PaisMap = _mapper.Map<Pais>(updatedPais);
+
+            if (!_paisRepository.UpdatePais(PaisMap))
+            {
+                ModelState.AddModelError("", "Error al actualizar la categoria");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{paisId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteCategoria(int paisId)
+        {
+            if (!_paisRepository.PaisExists(paisId))
+            {
+                return NotFound();
+            }
+
+            var paisEliminar = _paisRepository.GetPais(paisId);
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            if (!_paisRepository.DeletePais(paisEliminar))
+            {
+                ModelState.AddModelError("", "ALGO HA SALIDO MAL AL ELIMINAR EL PAIS");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Pais Eliminado");
+        }
     }
 }

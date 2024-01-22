@@ -106,5 +106,54 @@ namespace Pokemon.Controllers
 
             return Ok("Creado Exitosamente");
         }
+
+        [HttpPut("{criticoId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCritico(int criticoId, [FromBody] CriticoDto updatedCritico)
+        {
+            if (updatedCritico == null) return BadRequest(ModelState);
+
+            if (criticoId != updatedCritico.Id) return BadRequest(ModelState);
+
+            if (!_criticoRepository.CriticoExists(criticoId)) return NotFound();
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            var CriticoMap = _mapper.Map<Critico>(updatedCritico);
+
+            if (!_criticoRepository.UpdateCritico(CriticoMap))
+            {
+                ModelState.AddModelError("", "Error al actualizar el critico");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{criticoId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteCategoria(int criticoId)
+        {
+            if (!_criticoRepository.CriticoExists(criticoId))
+            {
+                return NotFound();
+            }
+
+            var criticoEliminar = _criticoRepository.GetCritico(criticoId);
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            if (!_criticoRepository.DeleteCritico(criticoEliminar))
+            {
+                ModelState.AddModelError("", "Algo ha salido mal al eliminiar el critico");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Critico eliminada");
+        }
+
     }
 }

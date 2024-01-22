@@ -22,6 +22,12 @@ namespace Pokemon.Repository
             return Save();
         }
 
+        public bool DeleteCategoria(Categoria categoria)
+        {
+            _context.Remove(categoria);
+            return Save();
+        }
+
         public Categoria GetCategoria(int id)
         {
             return _context.Categorias.Where(c => c.Id == id).FirstOrDefault();
@@ -41,6 +47,12 @@ namespace Pokemon.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        public bool UpdateCategoria(Categoria categoria)
+        {
+           _context.Update(categoria);
+           return Save();
         }
     }
 }

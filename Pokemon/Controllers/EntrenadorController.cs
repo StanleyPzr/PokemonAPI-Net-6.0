@@ -106,5 +106,54 @@ namespace Pokemon.Controllers
             return Ok("Creado Exitosamente");
         }
 
+
+        [HttpPut("{entrenadorId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+
+        public IActionResult UpdatePais(int entrenadorId, [FromBody] EntrenadorDto updatedEntrenador)
+        {
+            if (updatedEntrenador == null) return BadRequest(ModelState);
+
+            if (entrenadorId != updatedEntrenador.Id) return BadRequest(ModelState);
+
+            if (!_paisRepository.PaisExists(entrenadorId)) return NotFound();
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            var EntrenadorMap = _mapper.Map<Entrenador>(updatedEntrenador);
+
+            if (!_entrenadorRepository.UpdateEntrenador(EntrenadorMap))
+            {
+                ModelState.AddModelError("", "Error al actualizar el entrenador");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{entrenadorId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteCategoria(int entrenadorId)
+        {
+            if (!_entrenadorRepository.EntrenadorExist(entrenadorId))
+            {
+                return NotFound();
+            }
+
+            var entrenadorEliminar = _entrenadorRepository.GetEntrenador(entrenadorId);
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            if (!_entrenadorRepository.DeleteEntrenador(entrenadorEliminar))
+            {
+                ModelState.AddModelError("", "Algo ha salido mal al eliminar el entrenador");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Entrenador eliminada");
+        }
     }
 }

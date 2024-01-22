@@ -28,6 +28,12 @@ namespace Pokemon.Repository
             return _context.Critico.Any(C => C.Id == IdCritico);
         }
 
+        public bool DeleteCritico(Critico critico)
+        {
+            _context.Remove(critico);
+            return Save();
+        }
+
         public Critico GetCritico(int IdCritico)
         {
             return _context.Critico.Where(C => C.Id == IdCritico).Include(r => r.Reseñas).FirstOrDefault();
@@ -47,6 +53,12 @@ namespace Pokemon.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        public bool UpdateCritico(Critico critico)
+        {
+            _context.Update(critico);
+            return Save();
         }
     }
 }

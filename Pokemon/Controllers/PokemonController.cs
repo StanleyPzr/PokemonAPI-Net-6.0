@@ -14,14 +14,20 @@ namespace Pokemon.Controllers
         private readonly IPokemonRepository _pokemonRepository;
         private readonly ICategoriaRepository _categoriaRepository;
         private readonly IEntrenadorRepository _entrenadorRepository;
+        private readonly IReseñaRepository _reseñaRepository;
         private readonly IMapper _mapper;
 
-        public PokemonController(IPokemonRepository pokemonRepository,  IMapper mapper, ICategoriaRepository categoriaRepository, IEntrenadorRepository entrenadorRepository)
+        public PokemonController(IPokemonRepository pokemonRepository,
+            IMapper mapper,
+            ICategoriaRepository categoriaRepository,
+            IEntrenadorRepository entrenadorRepository,
+            IReseñaRepository reseñaRepository)
         {
             _pokemonRepository = pokemonRepository;
             _mapper = mapper;
             _categoriaRepository = categoriaRepository;
             _entrenadorRepository = entrenadorRepository;
+            _reseñaRepository = reseñaRepository;
         }
 
         [HttpGet]
@@ -105,6 +111,61 @@ namespace Pokemon.Controllers
             return Ok("Creado Exitosamente");
         }
 
+
+        [HttpPut("{pokeId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdatePais(int pokeId, [FromQuery] int entrenadorId, [FromQuery] int categoriaId, [FromBody] PokemonDto updatedPokemon)
+        {
+            if (updatedPokemon == null) return BadRequest(ModelState);
+
+            if (pokeId != updatedPokemon.Id) return BadRequest(ModelState);
+
+            if (!_pokemonRepository.PokemonExists(pokeId)) return NotFound();
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            var PokemonMap = _mapper.Map<PokemoN>(updatedPokemon);
+
+            if (!_pokemonRepository.UpdatePokemon(entrenadorId, categoriaId,PokemonMap))
+            {
+                ModelState.AddModelError("", "Error al actualizar el pokemon");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{pokeId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeletePokemon(int pokeId)
+        {
+            if (!_pokemonRepository.PokemonExists(pokeId))
+            {
+                return NotFound();
+            }
+
+            var reseñaEliminar = _reseñaRepository.GetReseñasPokemon(pokeId);
+            var pokemonEliminar = _pokemonRepository.GetPokemoN(pokeId);
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            if (_reseñaRepository.DeleteReseñas(reseñaEliminar.ToList()))
+            {
+                ModelState.AddModelError("", "Algo ha salido mal al eliminar las reseñas");
+                return StatusCode(500, ModelState);
+            }
+
+            if (!_pokemonRepository.DeletePokemon(pokemonEliminar))
+            {
+                ModelState.AddModelError("", "Algo ha salido mal al eliminar el pokemon");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Pokemon eliminado");
+        }
 
     }   
 

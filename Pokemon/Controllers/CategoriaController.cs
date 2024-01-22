@@ -99,5 +99,53 @@ namespace Pokemon.Controllers
 
             return Ok("Successfully created");
         }
+
+        [HttpPut("{categoriaId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateCategoria(int categoriaId, [FromBody] CategoriaDto updatedCategoria)
+        {
+            if (updatedCategoria == null) return BadRequest(ModelState);
+
+            if (categoriaId != updatedCategoria.Id) return BadRequest(ModelState);
+
+            if (!_categoriaRepository.CategoryExists(categoriaId)) return NotFound();
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            var categoriaMap = _mapper.Map<Categoria>(updatedCategoria);
+
+            if (!_categoriaRepository.UpdateCategoria(categoriaMap))
+            {
+                ModelState.AddModelError("", "Error al actualizar la categoria");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{categoriaId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteCategoria(int categoriaId)
+        {
+            if (!_categoriaRepository.CategoryExists(categoriaId))
+            {
+                return NotFound();
+            }
+
+            var categoriaEliminar = _categoriaRepository.GetCategoria(categoriaId);
+
+            if(!ModelState.IsValid) return BadRequest();
+
+            if (!_categoriaRepository.DeleteCategoria(categoriaEliminar))
+            {
+                ModelState.AddModelError("", "aLGO HA SALIDO MAL AL ELIMINAR LA CATEGORIA");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Categoria eliminada");
+        }
     }    
 }

@@ -19,6 +19,12 @@ namespace Pokemon.Repository
             return Save();
         }
 
+        public bool DeleteEntrenador(Entrenador entrenador)
+        {
+            _context.Remove(entrenador);
+            return Save();
+        }
+
         public bool EntrenadorExist(int IdEntrenador)
         {
             return _context.Entrenador.Any(E => E.Id == IdEntrenador);
@@ -48,6 +54,12 @@ namespace Pokemon.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        public bool UpdateEntrenador(Entrenador entrenador)
+        {
+            _context.Update(entrenador);
+            return Save();
         }
     }
 }

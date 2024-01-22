@@ -16,7 +16,7 @@ namespace Pokemon.Helpers
             CreateMap<Reseña, ReseñaDto>();
             CreateMap<Critico, CriticoDto>();
 
-            //POST's
+            //POST's & PUT
             CreateMap<CategoriaDto, Categoria>();
             CreateMap<PaisDto, Pais>();
             CreateMap<EntrenadorDto, Entrenador>();

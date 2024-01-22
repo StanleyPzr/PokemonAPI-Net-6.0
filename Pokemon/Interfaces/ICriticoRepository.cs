@@ -9,6 +9,8 @@ namespace Pokemon.Interfaces
         ICollection<Reseña> GetReseñaCritico(int IdCritico);
         bool CriticoExists(int IdCritico);
         bool CreateCritico(Critico critico);
+        bool UpdateCritico(Critico critico);
+        bool DeleteCritico(Critico critico);
         bool Save();
 
 

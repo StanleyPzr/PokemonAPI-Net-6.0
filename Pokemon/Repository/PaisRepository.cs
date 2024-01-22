@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore.Internal;
 using Pokemon.Data;
 using Pokemon.Interfaces;
 using Pokemon.Models;
@@ -19,6 +20,12 @@ namespace Pokemon.Repository
         public bool CreatePais(Pais pais)
         {
             _context.Add(pais);
+            return Save();
+        }
+
+        public bool DeletePais(Pais pais)
+        {
+            _context.Remove(pais);
             return Save();
         }
 
@@ -51,6 +58,12 @@ namespace Pokemon.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        public bool UpdatePais(Pais pais)
+        {
+            _context.Update(pais);
+            return Save();
         }
     }
 }

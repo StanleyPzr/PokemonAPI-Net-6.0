@@ -23,6 +23,18 @@ namespace Pokemon.Repository
             return Save();
         }
 
+        public bool DeleteReseña(Reseña reseña)
+        {
+            _context.Remove(reseña);
+            return Save();
+        }
+
+        public bool DeleteReseñas(List<Reseña> reseñas)
+        {
+            _context.RemoveRange(reseñas);
+            return Save();
+        }
+
         public Reseña GetReseña(int IdReseña)
         {
             return _context.Reseñas.Where(r => r.Id == IdReseña).FirstOrDefault();
@@ -47,6 +59,12 @@ namespace Pokemon.Repository
         {
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
+        }
+
+        public bool UpdateReseña(Reseña reseña)
+        {
+            _context.Update(reseña);
+            return Save();
         }
     }
 }

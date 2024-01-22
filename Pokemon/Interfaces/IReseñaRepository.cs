@@ -9,6 +9,9 @@ namespace Pokemon.Interfaces
         ICollection<Reseña> GetReseñasPokemon(int pokeId);
         bool ReseñaExists(int IdReseña);
         bool CreateReseña(Reseña reseña);
+        bool UpdateReseña(Reseña reseña);
+        bool DeleteReseña(Reseña reseña);
+        bool DeleteReseñas(List<Reseña> reseñas);
         bool Save();
     }
 }

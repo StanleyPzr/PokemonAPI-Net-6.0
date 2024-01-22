@@ -104,5 +104,74 @@ namespace Pokemon.Controllers
 
             return Ok("Creado Exitosamente");
         }
+
+        [HttpPut("{reseñaId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateReseña(int reseñaId, [FromBody] ReseñaDto updatedReseña)
+        {
+            if (updatedReseña == null) return BadRequest(ModelState);
+
+            if (reseñaId != updatedReseña.Id) return BadRequest(ModelState);
+
+            if (!_reseñaRepository.ReseñaExists(reseñaId)) return NotFound();
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            var ReseñaMap = _mapper.Map<Reseña>(updatedReseña);
+
+            if (!_reseñaRepository.UpdateReseña(ReseñaMap))
+            {
+                ModelState.AddModelError("", "Error al actualizar la reseña");
+                return StatusCode(500, ModelState);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{reseñaId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteReseña(int reseñaId)
+        {
+            if (!_reseñaRepository.ReseñaExists(reseñaId))
+            {
+                return NotFound();
+            }
+
+            var reseñaEliminar = _reseñaRepository.GetReseña(reseñaId);
+
+            if (!ModelState.IsValid) return BadRequest();
+
+            if (!_reseñaRepository.DeleteReseña(reseñaEliminar))
+            {
+                ModelState.AddModelError("", "Algo ha salido mal al eliminar la reseña");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Reseña eliminada");
+        }
+
+        [HttpDelete("DeleteReseñaCritico/{criticoId}")]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteReviewsByReviewer(int criticoId)
+        {
+            if (!_criticoRepository.CriticoExists(criticoId))
+                return NotFound();
+
+            var reviewsToDelete = _criticoRepository.GetReseñaCritico(criticoId).ToList();
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            if (!_reseñaRepository.DeleteReseñas(reviewsToDelete))
+            {
+                ModelState.AddModelError("", "Error al eliminar las reseñas");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
     }
 }
