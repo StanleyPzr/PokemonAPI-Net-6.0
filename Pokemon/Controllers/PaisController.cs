@@ -51,7 +51,7 @@ namespace Pokemon.Controllers
             return Ok(pais);
         }
 
-        [HttpGet("/Entrenador/{IdEntrenador}")]
+        [HttpGet("Entrenador/{IdEntrenador}")]
         [ProducesResponseType(400)]
         [ProducesResponseType(200, Type = typeof(Pais))]
         public IActionResult GetPaisByEntrenador(int IdEntrenador)
